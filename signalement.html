@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description"
+          content="Signaler un problème environnemental à Mbao">
+
+    <meta name="theme-color" content="#087f5b">
+
+    <title>Signalement environnemental | Jeunesse de Mbao</title>
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+</head>
+
+
+<body>
+
+<header class="header" id="header">
+
+    <div class="container header-container">
+
+        <a href="index.html" class="logo">
+
+            <div class="logo-symbol">
+                JM
+            </div>
+
+            <div class="logo-text">
+                <strong>JEUNESSE DE MBAO</strong>
+                <span>Portail numérique</span>
+            </div>
+
+        </a>
+
+
+        <button class="menu-toggle" id="menuToggle">
+
+            <span></span>
+            <span></span>
+            <span></span>
+
+        </button>
+
+
+        <nav class="navbar" id="navbar">
+
+            <a href="index.html" class="nav-link">
+                Accueil
+            </a>
+
+            <a href="conseil.html" class="nav-link">
+                Le Conseil
+            </a>
+
+            <a href="jeunesse.html" class="nav-link">
+                Jeunesse
+            </a>
+
+            <a href="environnement.html" class="nav-link">
+                Environnement & Climat
+            </a>
+
+            <a href="agenda.html" class="nav-link">
+                Agenda
+            </a>
+
+            <a href="participer.html" class="nav-link">
+                Participer
+            </a>
+
+            <a href="signalement.html"
+               class="nav-link nav-link-action active">
+                Signaler
+            </a>
+
+        </nav>
+
+    </div>
+
+</header>
+
+
+<main>
+
+
+<section class="hero page-hero">
+
+    <div class="container hero-container">
+
+        <div class="hero-content">
+
+            <div class="hero-badge">
+                <span class="badge-dot"></span>
+                Citoyenneté environnementale
+            </div>
+
+            <h1>
+                Un problème dans
+                <span>votre quartier ?</span>
+            </h1>
+
+            <p class="hero-description">
+                Signalez un problème environnemental constaté à Mbao.
+                Votre signalement pourra contribuer à identifier les
+                situations nécessitant une attention particulière.
+            </p>
+
+        </div>
+
+
+        <div class="hero-card">
+
+            <div class="hero-card-icon">
+                🚨
+            </div>
+
+            <span>Votre voix compte</span>
+
+            <strong>
+                Observer, signaler et agir.
+            </strong>
+
+            <p>
+                Une participation citoyenne commence par l'observation
+                de son environnement.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<section class="section">
+
+    <div class="container report-container">
+
+
+        <div class="report-content">
+
+            <span class="section-label">
+                FAIRE UN SIGNALEMENT
+            </span>
+
+            <h2>
+                Décrivez le problème
+                constaté.
+            </h2>
+
+            <p>
+                Remplissez le formulaire avec le maximum d'informations
+                utiles afin de permettre au Conseil de mieux comprendre
+                la situation.
+            </p>
+
+
+            <ul class="check-list">
+
+                <li>
+                    <span>✓</span>
+                    Dépôt sauvage de déchets
+                </li>
+
+                <li>
+                    <span>✓</span>
+                    Déchets plastiques
+                </li>
+
+                <li>
+                    <span>✓</span>
+                    Dégradation d'un espace vert
+                </li>
+
+                <li>
+                    <span>✓</span>
+                    Pollution ou nuisance
+                </li>
+
+                <li>
+                    <span>✓</span>
+                    Autre problème environnemental
+                </li>
+
+            </ul>
+
+        </div>
+
+
+        <div>
+
+            <form
+                class="modal-content"
+                id="environmentReportForm"
+                style="position:relative;width:100%;max-height:none;">
+
+                <div class="modal-header">
+
+                    <span class="modal-icon">
+                        🚨
+                    </span>
+
+                    <h2>
+                        Nouveau signalement
+                    </h2>
+
+                    <p>
+                        Les champs marqués d'un * sont obligatoires.
+                    </p>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="environmentType">
+                        Type de problème *
+                    </label>
+
+                    <select
+                        id="environmentType"
+                        required>
+
+                        <option value="">
+                            Sélectionner
+                        </option>
+
+                        <option value="depot_dechets">
+                            Dépôt sauvage de déchets
+                        </option>
+
+                        <option value="plastique">
+                            Déchets plastiques
+                        </option>
+
+                        <option value="espace_vert">
+                            Dégradation d'un espace vert
+                        </option>
+
+                        <option value="pollution">
+                            Pollution
+                        </option>
+
+                        <option value="eau">
+                            Problème lié à l'eau
+                        </option>
+
+                        <option value="incendie">
+                            Incendie / brûlage de déchets
+                        </option>
+
+                        <option value="autre">
+                            Autre
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="environmentNeighborhood">
+                        Quartier *
+                    </label>
+
+                    <input
+                        type="text"
+                        id="environmentNeighborhood"
+                        placeholder="Ex : Mbao Village"
+                        required>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="environmentLocation">
+                        Lieu précis
+                    </label>
+
+                    <input
+                        type="text"
+                        id="environmentLocation"
+                        placeholder="Ex : près de l'école, rue..."
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="environmentDescription">
+                        Description du problème *
+                    </label>
+
+                    <textarea
+                        id="environmentDescription"
+                        rows="5"
+                        placeholder="Décrivez ce que vous avez constaté..."
+                        required></textarea>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="environmentPhoto">
+                        Ajouter une photo
+                    </label>
+
+                    <input
+                        type="file"
+                        id="environmentPhoto"
+                        accept="image/*">
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="reporterName">
+                        Votre nom
+                    </label>
+
+                    <input
+                        type="text"
+                        id="reporterName"
+                        placeholder="Facultatif">
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="reporterPhone">
+                        Téléphone
+                    </label>
+
+                    <input
+                        type="tel"
+                        id="reporterPhone"
+                        placeholder="Facultatif">
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="btn btn-primary modal-submit">
+
+                    🚨 Envoyer le signalement
+
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<section class="section section-light">
+
+    <div class="container">
+
+        <div class="section-heading centered">
+
+            <span class="section-label">
+                COMMENT ÇA FONCTIONNE ?
+            </span>
+
+            <h2>
+                Du signalement au suivi
+            </h2>
+
+        </div>
+
+
+        <div class="feature-grid">
+
+            <article class="feature-card">
+
+                <div class="feature-icon">
+                    📱
+                </div>
+
+                <h3>
+                    1. Vous signalez
+                </h3>
+
+                <p>
+                    Vous transmettez les informations disponibles
+                    concernant le problème constaté.
+                </p>
+
+            </article>
+
+
+            <article class="feature-card">
+
+                <div class="feature-icon">
+                    🔎
+                </div>
+
+                <h3>
+                    2. Le signalement est étudié
+                </h3>
+
+                <p>
+                    Le Conseil pourra examiner les informations
+                    reçues et déterminer les suites appropriées.
+                </p>
+
+            </article>
+
+
+            <article class="feature-card">
+
+                <div class="feature-icon">
+                    ✅
+                </div>
+
+                <h3>
+                    3. Suivi de l'action
+                </h3>
+
+                <p>
+                    Dans la future version, le portail permettra
+                    de suivre l'évolution du signalement.
+                </p>
+
+            </article>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<section class="final-cta">
+
+    <div class="container">
+
+        <span>
+            ENVIRONNEMENT • CITOYENNETÉ • ACTION
+        </span>
+
+        <h2>
+            Ensemble, contribuons à un
+            environnement plus sain à Mbao.
+        </h2>
+
+        <a href="environnement.html" class="btn btn-light">
+            Découvrir nos actions →
+        </a>
+
+    </div>
+
+</section>
+
+
+</main>
+
+
+<footer class="footer">
+
+    <div class="container footer-grid">
+
+        <div class="footer-brand">
+
+            <div class="logo footer-logo">
+
+                <div class="logo-symbol">
+                    JM
+                </div>
+
+                <div class="logo-text">
+                    <strong>JEUNESSE DE MBAO</strong>
+                    <span>Portail numérique</span>
+                </div>
+
+            </div>
+
+            <p>
+                Informer, mobiliser et accompagner la jeunesse
+                de Mbao.
+            </p>
+
+        </div>
+
+
+        <div class="footer-column">
+
+            <h3>
+                Le Conseil
+            </h3>
+
+            <a href="conseil.html">
+                Présentation
+            </a>
+
+            <a href="conseil.html">
+                Missions
+            </a>
+
+        </div>
+
+
+        <div class="footer-column">
+
+            <h3>
+                Environnement
+            </h3>
+
+            <a href="environnement.html">
+                Projets
+            </a>
+
+            <a href="environnement.html">
+                Actions
+            </a>
+
+            <a href="signalement.html">
+                Signaler
+            </a>
+
+        </div>
+
+
+        <div class="footer-column">
+
+            <h3>
+                Participer
+            </h3>
+
+            <a href="participer.html">
+                S'inscrire
+            </a>
+
+            <a href="agenda.html">
+                Agenda
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <div class="footer-bottom">
+
+        <div class="container">
+
+            <p>
+                © <span id="currentYear"></span>
+                Conseil consultatif de la jeunesse de Mbao.
+            </p>
+
+            <p>
+                Portail numérique
+            </p>
+
+        </div>
+
+    </div>
+
+</footer>
+
+
+<script src="js/app.js"></script>
+
+
+<script>
+
+/*
+ * Gestion spécifique du formulaire
+ * de signalement environnemental.
+ */
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    const form =
+        document.getElementById(
+            "environmentReportForm"
+        );
+
+
+    if (!form) {
+        return;
+    }
+
+
+    form.addEventListener(
+        "submit",
+        event => {
+
+            event.preventDefault();
+
+
+            const type =
+                document.getElementById(
+                    "environmentType"
+                ).value;
+
+
+            const neighborhood =
+                document.getElementById(
+                    "environmentNeighborhood"
+                ).value.trim();
+
+
+            const location =
+                document.getElementById(
+                    "environmentLocation"
+                ).value.trim();
+
+
+            const description =
+                document.getElementById(
+                    "environmentDescription"
+                ).value.trim();
+
+
+            const reporterName =
+                document.getElementById(
+                    "reporterName"
+                ).value.trim();
+
+
+            const reporterPhone =
+                document.getElementById(
+                    "reporterPhone"
+                ).value.trim();
+
+
+            if (
+                !type ||
+                !neighborhood ||
+                !description
+            ) {
+
+                alert(
+                    "Veuillez remplir les champs obligatoires."
+                );
+
+                return;
+
+            }
+
+
+            const signalement = {
+
+                id:
+                    "SIG-" +
+                    Date.now(),
+
+                type: type,
+
+                quartier: neighborhood,
+
+                lieu: location,
+
+                description: description,
+
+                nom: reporterName,
+
+                telephone: reporterPhone,
+
+                statut: "nouveau",
+
+                date:
+                    new Date().toISOString()
+
+            };
+
+
+            const signalements =
+                JSON.parse(
+                    localStorage.getItem(
+                        "mbao_signalements"
+                    )
+                ) || [];
+
+
+            signalements.push(signalement);
+
+
+            localStorage.setItem(
+                "mbao_signalements",
+                JSON.stringify(signalements)
+            );
+
+
+            alert(
+                "Votre signalement a bien été enregistré."
+            );
+
+
+            form.reset();
+
+        }
+    );
+
+});
+
+</script>
+
+</body>
+</html>
