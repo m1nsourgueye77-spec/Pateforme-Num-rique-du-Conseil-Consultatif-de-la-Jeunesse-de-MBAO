@@ -2103,3 +2103,31 @@ img {
 .page-climate-hero .section-heading {
     max-width: 800px;
 }
+
+
+
+
+.logo-image {
+    width: 52px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.logo-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+
+
+
+
+.footer-logo .logo-image {
+    width: 60px;
+    height: 60px;
+}
+
