@@ -1,675 +1,612 @@
-/*******************************************************
- * CCJ MBAO – PORTAIL NUMÉRIQUE
- * Connexion Google Apps Script → Google Sheets
- *******************************************************/
+/* =========================================================
+   PORTAIL NUMÉRIQUE DE LA JEUNESSE DE MBAO
+   JavaScript principal
+   Menu mobile + Google Apps Script + formulaires
+   ========================================================= */
 
+"use strict";
 
-/* =====================================================
+/* =========================================================
    CONFIGURATION API
-===================================================== */
+   ========================================================= */
 
 const API_URL =
     "https://script.google.com/macros/s/AKfycbyrnIMD_QG3G1gxc62hGgJEoo3SBNvl9jwTXcHWtCUHj1iOiYpb_p6UldhN-kz6L9qF/exec";
 
+/* =========================================================
+   UTILITAIRES
+   ========================================================= */
 
-/* =====================================================
-   MESSAGE
-===================================================== */
+function afficherMessage(element, message, type = "success") {
+    if (!element) return;
 
-function afficherMessage(elementId, message, succes = true) {
-
-    const element = document.getElementById(elementId);
-
-    if (!element) {
-        console.error("Élément introuvable :", elementId);
-        return;
-    }
-
-    element.style.display = "block";
     element.textContent = message;
-    element.style.padding = "12px";
-    element.style.marginTop = "15px";
-    element.style.borderRadius = "8px";
-
-    if (succes) {
-
-        element.style.background = "#dcfce7";
-        element.style.color = "#166534";
-
-    } else {
-
-        element.style.background = "#fee2e2";
-        element.style.color = "#991b1b";
-    }
+    element.className = "form-message " + type;
+    element.style.display = "block";
 }
 
+function masquerMessage(element) {
+    if (!element) return;
 
-/* =====================================================
+    element.textContent = "";
+    element.className = "form-message";
+    element.style.display = "none";
+}
+
+/* =========================================================
    API GET
-===================================================== */
+   ========================================================= */
 
-async function apiGet(action) {
-
-    console.log("GET API :", action);
+async function apiGet(action, params = {}) {
 
     try {
 
-        const url =
-            API_URL +
-            "?action=" +
-            encodeURIComponent(action);
+        const url = new URL(API_URL);
 
-        const response = await fetch(url);
+        url.searchParams.set("action", action);
 
-        console.log("Réponse HTTP GET :", response.status);
+        Object.keys(params).forEach(key => {
+            if (
+                params[key] !== undefined &&
+                params[key] !== null &&
+                params[key] !== ""
+            ) {
+                url.searchParams.set(key, params[key]);
+            }
+        });
 
-        const texte = await response.text();
+        console.log("GET API :", url.toString());
 
-        console.log("Réponse GET :", texte);
+        const response = await fetch(url.toString(), {
+            method: "GET",
+            cache: "no-cache"
+        });
 
-        let resultat;
+        const text = await response.text();
+
+        console.log("Réponse API GET :", text);
+
+        let data;
 
         try {
-
-            resultat = JSON.parse(texte);
-
+            data = JSON.parse(text);
         } catch (error) {
+            throw new Error("La réponse du serveur n'est pas un JSON valide.");
+        }
 
+        if (!response.ok) {
             throw new Error(
-                "La réponse de Google Apps Script n'est pas un JSON valide."
+                data.message || "Erreur HTTP " + response.status
             );
         }
 
-        return resultat;
+        return data;
 
     } catch (error) {
 
-        console.error("ERREUR API GET :", error);
+        console.error("Erreur apiGet :", error);
 
-        return {
-            success: false,
-            message: error.message
-        };
+        throw error;
     }
 }
 
-
-/* =====================================================
+/* =========================================================
    API POST
-===================================================== */
+   ========================================================= */
 
-async function apiPost(data) {
-
-    console.log("====================================");
-    console.log("POST API");
-    console.log("Données envoyées :", data);
-    console.log("====================================");
+async function apiPost(action, data = {}) {
 
     try {
 
+        const payload = {
+            action: action,
+            ...data
+        };
+
+        console.log("POST API :", payload);
+
         const response = await fetch(API_URL, {
-
             method: "POST",
-
             headers: {
                 "Content-Type": "text/plain;charset=utf-8"
             },
-
-            body: JSON.stringify(data)
-
+            body: JSON.stringify(payload)
         });
 
+        const text = await response.text();
 
-        console.log(
-            "Réponse HTTP POST :",
-            response.status
-        );
+        console.log("Réponse API POST :", text);
 
-
-        const texte = await response.text();
-
-
-        console.log(
-            "Réponse Google Apps Script :",
-            texte
-        );
-
-
-        if (!texte) {
-
-            throw new Error(
-                "Google Apps Script a retourné une réponse vide."
-            );
-        }
-
-
-        let resultat;
+        let result;
 
         try {
-
-            resultat = JSON.parse(texte);
-
+            result = JSON.parse(text);
         } catch (error) {
+            throw new Error("La réponse du serveur n'est pas un JSON valide.");
+        }
 
-            console.error(
-                "Réponse reçue non JSON :",
-                texte
-            );
-
+        if (!response.ok) {
             throw new Error(
-                "Réponse Google Apps Script invalide."
+                result.message || "Erreur HTTP " + response.status
             );
         }
 
-
-        return resultat;
-
+        return result;
 
     } catch (error) {
 
-        console.error(
-            "ERREUR API POST :",
-            error
-        );
+        console.error("Erreur apiPost :", error);
 
-
-        return {
-
-            success: false,
-
-            message:
-                "Impossible d'envoyer les données. " +
-                error.message
-
-        };
+        throw error;
     }
 }
 
+/* =========================================================
+   MENU MOBILE
+   ========================================================= */
 
-/* =====================================================
+function initialiserMenuMobile() {
+
+    const menuToggle = document.querySelector(".menu-toggle");
+    const navMenu = document.querySelector(".nav-menu");
+
+    if (!menuToggle || !navMenu) {
+        console.log("ℹ️ Menu mobile non détecté sur cette page.");
+        return;
+    }
+
+    console.log("✅ Menu mobile détecté");
+
+    function ouvrirFermerMenu() {
+
+        const ouvert = navMenu.classList.toggle("open");
+
+        menuToggle.classList.toggle("active", ouvert);
+
+        menuToggle.setAttribute(
+            "aria-expanded",
+            ouvert ? "true" : "false"
+        );
+
+        document.body.classList.toggle("menu-open", ouvert);
+    }
+
+    menuToggle.addEventListener("click", function (event) {
+
+        event.stopPropagation();
+
+        ouvrirFermerMenu();
+    });
+
+    /* Fermer après clic sur un lien */
+
+    const liens = navMenu.querySelectorAll("a");
+
+    liens.forEach(function (lien) {
+
+        lien.addEventListener("click", function () {
+
+            navMenu.classList.remove("open");
+            menuToggle.classList.remove("active");
+
+            menuToggle.setAttribute(
+                "aria-expanded",
+                "false"
+            );
+
+            document.body.classList.remove("menu-open");
+        });
+
+    });
+
+    /* Fermer si on clique en dehors du menu */
+
+    document.addEventListener("click", function (event) {
+
+        const clicDansMenu =
+            navMenu.contains(event.target);
+
+        const clicSurBouton =
+            menuToggle.contains(event.target);
+
+        if (
+            navMenu.classList.contains("open") &&
+            !clicDansMenu &&
+            !clicSurBouton
+        ) {
+
+            navMenu.classList.remove("open");
+            menuToggle.classList.remove("active");
+
+            menuToggle.setAttribute(
+                "aria-expanded",
+                "false"
+            );
+
+            document.body.classList.remove("menu-open");
+        }
+
+    });
+
+    /* Fermer le menu si l'écran repasse en desktop */
+
+    window.addEventListener("resize", function () {
+
+        if (window.innerWidth > 700) {
+
+            navMenu.classList.remove("open");
+            menuToggle.classList.remove("active");
+
+            menuToggle.setAttribute(
+                "aria-expanded",
+                "false"
+            );
+
+            document.body.classList.remove("menu-open");
+        }
+
+    });
+}
+
+/* =========================================================
    INSCRIPTION JEUNE
-===================================================== */
+   ========================================================= */
 
 async function inscrireJeune(data) {
 
-    return await apiPost({
-
-        action: "inscription",
-
-        nom: data.nom || "",
-
-        prenom: data.prenom || "",
-
-        telephone: data.telephone || "",
-
-        quartier: data.quartier || "",
-
-        email: data.email || "",
-
-        domaine: data.domaine || "",
-
-        volontaire: data.volontaire || "Non"
-
-    });
+    return await apiPost("inscription", data);
 }
 
-
-/* =====================================================
-   PROPOSER UNE IDÉE
-===================================================== */
+/* =========================================================
+   ENVOI D'UNE IDÉE
+   ========================================================= */
 
 async function envoyerIdee(data) {
 
-    return await apiPost({
-
-        action: "idee",
-
-        nom: data.nom || "",
-
-        telephone: data.telephone || "",
-
-        quartier: data.quartier || "",
-
-        categorie: data.categorie || "",
-
-        idee: data.idee || ""
-
-    });
+    return await apiPost("idee", data);
 }
 
-
-/* =====================================================
-   SIGNALEMENT
-===================================================== */
+/* =========================================================
+   ENVOI D'UN SIGNALEMENT
+   ========================================================= */
 
 async function envoyerSignalement(data) {
 
-    return await apiPost({
-
-        action: "signalement",
-
-        type: data.type || "",
-
-        quartier: data.quartier || "",
-
-        lieu: data.lieu || "",
-
-        description: data.description || "",
-
-        photo: data.photo || "",
-
-        nom: data.nom || "",
-
-        telephone: data.telephone || ""
-
-    });
+    return await apiPost("signalement", data);
 }
 
-
-/* =====================================================
-   ACTIVITÉ
-===================================================== */
+/* =========================================================
+   ENVOI D'UNE ACTIVITÉ
+   ========================================================= */
 
 async function envoyerActivite(data) {
 
-    return await apiPost({
-
-        action: "activite",
-
-        date: data.date || "",
-
-        activite: data.activite || "",
-
-        categorie: data.categorie || "",
-
-        lieu: data.lieu || "",
-
-        description: data.description || "",
-
-        participants: data.participants || 0,
-
-        responsable: data.responsable || "",
-
-        statut: data.statut || "Prévue",
-
-        photo: data.photo || ""
-
-    });
+    return await apiPost("activite", data);
 }
 
-
-/* =====================================================
-   PARTICIPATION
-===================================================== */
+/* =========================================================
+   ENVOI D'UNE PARTICIPATION
+   ========================================================= */
 
 async function envoyerParticipation(data) {
 
-    return await apiPost({
+    return await apiPost("participation", data);
+}
 
-        action: "participation",
+/* =========================================================
+   FORMULAIRE INSCRIPTION
+   ========================================================= */
 
-        jeune_id: data.jeune_id || "",
+function initialiserFormulaireInscription() {
 
-        activite_id: data.activite_id || "",
+    const form = document.getElementById("inscriptionForm");
 
-        nom: data.nom || "",
+    if (!form) return;
 
-        telephone: data.telephone || "",
+    console.log("✅ Formulaire inscription détecté");
 
-        present: data.present || "Oui",
+    const message =
+        document.getElementById("inscriptionMessage");
 
-        observation: data.observation || ""
+    form.addEventListener("submit", async function (event) {
+
+        event.preventDefault();
+
+        masquerMessage(message);
+
+        const bouton =
+            form.querySelector("button[type='submit']");
+
+        if (bouton) {
+            bouton.disabled = true;
+            bouton.textContent = "Enregistrement...";
+        }
+
+        try {
+
+            const data = {
+                nom: document.getElementById("inscriptionNom")?.value.trim() || "",
+                prenom: document.getElementById("inscriptionPrenom")?.value.trim() || "",
+                telephone: document.getElementById("inscriptionTelephone")?.value.trim() || "",
+                quartier: document.getElementById("inscriptionQuartier")?.value.trim() || "",
+                email: document.getElementById("inscriptionEmail")?.value.trim() || "",
+                domaine: document.getElementById("inscriptionDomaine")?.value || "",
+                volontaire:
+                    document.getElementById("inscriptionVolontaire")?.value || "Non"
+            };
+
+            if (!data.nom || !data.prenom || !data.telephone) {
+
+                throw new Error(
+                    "Veuillez remplir les champs obligatoires."
+                );
+            }
+
+            const result =
+                await inscrireJeune(data);
+
+            if (result.success === false) {
+
+                throw new Error(
+                    result.message || "L'inscription a échoué."
+                );
+            }
+
+            afficherMessage(
+                message,
+                "Votre inscription a été enregistrée avec succès.",
+                "success"
+            );
+
+            form.reset();
+
+        } catch (error) {
+
+            console.error(error);
+
+            afficherMessage(
+                message,
+                error.message ||
+                "Une erreur est survenue. Veuillez réessayer.",
+                "error"
+            );
+
+        } finally {
+
+            if (bouton) {
+
+                bouton.disabled = false;
+                bouton.textContent = "S'inscrire";
+            }
+        }
 
     });
 }
 
+/* =========================================================
+   FORMULAIRE VOLONTAIRE
+   ========================================================= */
 
-/* =====================================================
-   FORMULAIRE INSCRIPTION
-===================================================== */
+function initialiserFormulaireVolontaire() {
+
+    const form =
+        document.getElementById("volontaireForm");
+
+    if (!form) return;
+
+    console.log("✅ Formulaire volontaire détecté");
+
+    const message =
+        document.getElementById("volontaireMessage");
+
+    form.addEventListener("submit", async function (event) {
+
+        event.preventDefault();
+
+        masquerMessage(message);
+
+        const bouton =
+            form.querySelector("button[type='submit']");
+
+        if (bouton) {
+
+            bouton.disabled = true;
+            bouton.textContent = "Enregistrement...";
+        }
+
+        try {
+
+            const data = {
+
+                nom:
+                    document.getElementById("volontaireNom")?.value.trim() || "",
+
+                prenom:
+                    document.getElementById("volontairePrenom")?.value.trim() || "",
+
+                telephone:
+                    document.getElementById("volontaireTelephone")?.value.trim() || "",
+
+                quartier:
+                    document.getElementById("volontaireQuartier")?.value.trim() || "",
+
+                domaine:
+                    document.getElementById("volontaireDomaine")?.value || "",
+
+                volontaire: "Oui"
+            };
+
+            if (
+                !data.nom ||
+                !data.prenom ||
+                !data.telephone
+            ) {
+
+                throw new Error(
+                    "Veuillez remplir les champs obligatoires."
+                );
+            }
+
+            const result =
+                await inscrireJeune(data);
+
+            if (result.success === false) {
+
+                throw new Error(
+                    result.message ||
+                    "L'inscription comme volontaire a échoué."
+                );
+            }
+
+            afficherMessage(
+                message,
+                "Votre demande de volontariat a été enregistrée avec succès.",
+                "success"
+            );
+
+            form.reset();
+
+        } catch (error) {
+
+            console.error(error);
+
+            afficherMessage(
+                message,
+                error.message ||
+                "Une erreur est survenue.",
+                "error"
+            );
+
+        } finally {
+
+            if (bouton) {
+
+                bouton.disabled = false;
+                bouton.textContent = "Devenir volontaire";
+            }
+        }
+
+    });
+}
+
+/* =========================================================
+   FORMULAIRE IDÉE
+   ========================================================= */
+
+function initialiserFormulaireIdee() {
+
+    const form =
+        document.getElementById("ideeForm");
+
+    if (!form) return;
+
+    console.log("✅ Formulaire idée détecté");
+
+    const message =
+        document.getElementById("ideeMessage");
+
+    form.addEventListener("submit", async function (event) {
+
+        event.preventDefault();
+
+        masquerMessage(message);
+
+        const bouton =
+            form.querySelector("button[type='submit']");
+
+        if (bouton) {
+
+            bouton.disabled = true;
+            bouton.textContent = "Envoi...";
+        }
+
+        try {
+
+            const data = {
+
+                nom:
+                    document.getElementById("ideeNom")?.value.trim() || "",
+
+                telephone:
+                    document.getElementById("ideeTelephone")?.value.trim() || "",
+
+                quartier:
+                    document.getElementById("ideeQuartier")?.value.trim() || "",
+
+                categorie:
+                    document.getElementById("ideeCategorie")?.value || "",
+
+                idee:
+                    document.getElementById("ideeTexte")?.value.trim() || ""
+            };
+
+            if (!data.idee) {
+
+                throw new Error(
+                    "Veuillez saisir votre idée."
+                );
+            }
+
+            const result =
+                await envoyerIdee(data);
+
+            if (result.success === false) {
+
+                throw new Error(
+                    result.message ||
+                    "L'envoi de l'idée a échoué."
+                );
+            }
+
+            afficherMessage(
+                message,
+                "Merci ! Votre idée a bien été envoyée au Conseil.",
+                "success"
+            );
+
+            form.reset();
+
+        } catch (error) {
+
+            console.error(error);
+
+            afficherMessage(
+                message,
+                error.message ||
+                "Une erreur est survenue.",
+                "error"
+            );
+
+        } finally {
+
+            if (bouton) {
+
+                bouton.disabled = false;
+                bouton.textContent = "Envoyer mon idée";
+            }
+        }
+
+    });
+}
+
+/* =========================================================
+   INITIALISATION GÉNÉRALE
+   ========================================================= */
 
 document.addEventListener("DOMContentLoaded", function () {
 
-
+    console.log("");
     console.log("====================================");
     console.log("CCJ MBAO – PORTAIL NUMÉRIQUE");
     console.log("JavaScript chargé correctement");
     console.log("====================================");
 
+    initialiserMenuMobile();
 
-    /* =================================================
-       INSCRIPTION
-    ================================================= */
+    initialiserFormulaireInscription();
 
-    const inscriptionForm =
-        document.getElementById("inscriptionForm");
+    initialiserFormulaireVolontaire();
 
-
-    if (inscriptionForm) {
-
-        console.log("✅ Formulaire inscription détecté");
-
-
-        inscriptionForm.addEventListener(
-            "submit",
-            async function (event) {
-
-                event.preventDefault();
-
-
-                afficherMessage(
-                    "inscriptionMessage",
-                    "⏳ Enregistrement en cours...",
-                    true
-                );
-
-
-                const data = {
-
-                    nom:
-                        document
-                            .getElementById("inscriptionNom")
-                            .value
-                            .trim(),
-
-                    prenom:
-                        document
-                            .getElementById("inscriptionPrenom")
-                            .value
-                            .trim(),
-
-                    telephone:
-                        document
-                            .getElementById("inscriptionTelephone")
-                            .value
-                            .trim(),
-
-                    quartier:
-                        document
-                            .getElementById("inscriptionQuartier")
-                            .value
-                            .trim(),
-
-                    email:
-                        document
-                            .getElementById("inscriptionEmail")
-                            .value
-                            .trim(),
-
-                    domaine:
-                        document
-                            .getElementById("inscriptionDomaine")
-                            .value,
-
-                    volontaire: "Non"
-                };
-
-
-                const resultat =
-                    await inscrireJeune(data);
-
-
-                console.log(
-                    "Résultat inscription :",
-                    resultat
-                );
-
-
-                if (resultat.success) {
-
-                    afficherMessage(
-                        "inscriptionMessage",
-                        "✅ Votre inscription a été enregistrée avec succès. Votre identifiant est : " +
-                        resultat.id,
-                        true
-                    );
-
-
-                    inscriptionForm.reset();
-
-
-                } else {
-
-                    afficherMessage(
-                        "inscriptionMessage",
-                        "❌ " +
-                        (
-                            resultat.message ||
-                            "Une erreur est survenue."
-                        ),
-                        false
-                    );
-                }
-
-            }
-        );
-
-    } else {
-
-        console.warn(
-            "ℹ️ Aucun formulaire inscription sur cette page."
-        );
-    }
-
-
-
-    /* =================================================
-       VOLONTAIRE
-    ================================================= */
-
-    const volontaireForm =
-        document.getElementById("volontaireForm");
-
-
-    if (volontaireForm) {
-
-        console.log("✅ Formulaire volontaire détecté");
-
-
-        volontaireForm.addEventListener(
-            "submit",
-            async function (event) {
-
-                event.preventDefault();
-
-
-                afficherMessage(
-                    "volontaireMessage",
-                    "⏳ Enregistrement de votre candidature...",
-                    true
-                );
-
-
-                const data = {
-
-                    nom:
-                        document
-                            .getElementById("volontaireNom")
-                            .value
-                            .trim(),
-
-                    prenom:
-                        document
-                            .getElementById("volontairePrenom")
-                            .value
-                            .trim(),
-
-                    telephone:
-                        document
-                            .getElementById("volontaireTelephone")
-                            .value
-                            .trim(),
-
-                    quartier:
-                        document
-                            .getElementById("volontaireQuartier")
-                            .value
-                            .trim(),
-
-                    domaine:
-                        document
-                            .getElementById("volontaireDomaine")
-                            .value,
-
-                    volontaire: "Oui"
-
-                };
-
-
-                const resultat =
-                    await inscrireJeune(data);
-
-
-                console.log(
-                    "Résultat volontaire :",
-                    resultat
-                );
-
-
-                if (resultat.success) {
-
-                    afficherMessage(
-                        "volontaireMessage",
-                        "✅ Votre demande pour devenir volontaire a été enregistrée. Votre identifiant est : " +
-                        resultat.id,
-                        true
-                    );
-
-
-                    volontaireForm.reset();
-
-
-                } else {
-
-                    afficherMessage(
-                        "volontaireMessage",
-                        "❌ " +
-                        (
-                            resultat.message ||
-                            "Une erreur est survenue."
-                        ),
-                        false
-                    );
-                }
-
-            }
-        );
-
-    } else {
-
-        console.warn(
-            "ℹ️ Aucun formulaire volontaire sur cette page."
-        );
-    }
-
-
-
-    /* =================================================
-       IDÉE
-    ================================================= */
-
-    const ideeForm =
-        document.getElementById("ideeForm");
-
-
-    if (ideeForm) {
-
-        console.log("✅ Formulaire idée détecté");
-
-
-        ideeForm.addEventListener(
-            "submit",
-            async function (event) {
-
-                event.preventDefault();
-
-
-                afficherMessage(
-                    "ideeMessage",
-                    "⏳ Envoi de votre idée...",
-                    true
-                );
-
-
-                const data = {
-
-                    nom:
-                        document
-                            .getElementById("ideeNom")
-                            .value
-                            .trim(),
-
-                    telephone:
-                        document
-                            .getElementById("ideeTelephone")
-                            .value
-                            .trim(),
-
-                    quartier:
-                        document
-                            .getElementById("ideeQuartier")
-                            .value
-                            .trim(),
-
-                    categorie:
-                        document
-                            .getElementById("ideeCategorie")
-                            .value,
-
-                    idee:
-                        document
-                            .getElementById("ideeTexte")
-                            .value
-                            .trim()
-
-                };
-
-
-                const resultat =
-                    await envoyerIdee(data);
-
-
-                console.log(
-                    "Résultat idée :",
-                    resultat
-                );
-
-
-                if (resultat.success) {
-
-                    afficherMessage(
-                        "ideeMessage",
-                        "✅ Merci ! Votre idée a bien été enregistrée. Référence : " +
-                        resultat.id,
-                        true
-                    );
-
-
-                    ideeForm.reset();
-
-
-                } else {
-
-                    afficherMessage(
-                        "ideeMessage",
-                        "❌ " +
-                        (
-                            resultat.message ||
-                            "Une erreur est survenue."
-                        ),
-                        false
-                    );
-                }
-
-            }
-        );
-
-    } else {
-
-        console.warn(
-            "ℹ️ Aucun formulaire idée sur cette page."
-        );
-    }
-
+    initialiserFormulaireIdee();
 
 });
