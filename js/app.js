@@ -609,6 +609,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     initialiserFormulaireIdee();
 
+   initialiserFormulaireSignalement();
+
 });
 
 
