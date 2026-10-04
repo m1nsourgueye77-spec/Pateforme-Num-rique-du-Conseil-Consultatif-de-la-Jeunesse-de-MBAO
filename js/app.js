@@ -610,3 +610,124 @@ document.addEventListener("DOMContentLoaded", function () {
     initialiserFormulaireIdee();
 
 });
+
+
+
+/* =====================================================
+   FORMULAIRE SIGNALEMENT
+===================================================== */
+
+function initialiserFormulaireSignalement() {
+
+    const form = document.getElementById("signalementForm");
+
+    if (!form) {
+        return;
+    }
+
+    console.log("✅ Formulaire signalement détecté");
+
+    form.addEventListener("submit", async function (event) {
+
+        event.preventDefault();
+
+        const message = document.getElementById("signalementMessage");
+
+        const type = document
+            .getElementById("signalementType")
+            .value
+            .trim();
+
+        const quartier = document
+            .getElementById("signalementQuartier")
+            .value
+            .trim();
+
+        const lieu = document
+            .getElementById("signalementLieu")
+            .value
+            .trim();
+
+        const description = document
+            .getElementById("signalementDescription")
+            .value
+            .trim();
+
+        const nom = document
+            .getElementById("signalementNom")
+            .value
+            .trim();
+
+        const telephone = document
+            .getElementById("signalementTelephone")
+            .value
+            .trim();
+
+        /* ==============================
+           VALIDATION
+        ============================== */
+
+        if (!type || !quartier || !description) {
+
+            afficherMessage(
+                message,
+                "Veuillez remplir les champs obligatoires.",
+                "error"
+            );
+
+            return;
+        }
+
+        /* ==============================
+           DONNÉES
+        ============================== */
+
+        const data = {
+
+            type: type,
+
+            quartier: quartier,
+
+            lieu: lieu,
+
+            description: description,
+
+            nom: nom,
+
+            telephone: telephone,
+
+            photo: ""
+
+        };
+
+        console.log("📤 Envoi signalement :", data);
+
+        /* ==============================
+           ENVOI GOOGLE APPS SCRIPT
+        ============================== */
+
+        const resultat = await envoyerSignalement(data);
+
+        console.log("📥 Réponse signalement :", resultat);
+
+        if (resultat && resultat.success) {
+
+            afficherMessage(
+                message,
+                "✅ Votre signalement a bien été enregistré. Merci pour votre participation citoyenne.",
+                "success"
+            );
+
+            form.reset();
+
+        } else {
+
+            afficherMessage(
+                message,
+                "❌ Impossible d'enregistrer le signalement. Veuillez réessayer.",
+                "error"
+            );
+        }
+
+    });
+}
