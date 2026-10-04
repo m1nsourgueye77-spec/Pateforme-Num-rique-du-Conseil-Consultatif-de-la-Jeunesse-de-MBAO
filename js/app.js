@@ -1,626 +1,675 @@
-/* =========================================================
-   PORTAIL NUMÉRIQUE DE LA JEUNESSE DE MBAO
-   JAVASCRIPT PRINCIPAL
-========================================================= */
-
-document.addEventListener("DOMContentLoaded", () => {
-
-    /* =====================================================
-       VARIABLES
-    ===================================================== */
-
-    const header = document.getElementById("header");
-    const menuToggle = document.getElementById("menuToggle");
-    const navbar = document.getElementById("navbar");
-
-    const reportModal = document.getElementById("reportModal");
-    const openReportModal = document.getElementById("openReportModal");
-    const closeReportModal = document.getElementById("closeReportModal");
-    const modalOverlay = document.getElementById("modalOverlay");
-
-    const reportForm = document.getElementById("reportForm");
-
-    const toast = document.getElementById("toast");
-
-    const currentYear = document.getElementById("currentYear");
+/*******************************************************
+ * CCJ MBAO – PORTAIL NUMÉRIQUE
+ * Connexion Google Apps Script → Google Sheets
+ *******************************************************/
 
 
-    /* =====================================================
-       ANNÉE AUTOMATIQUE
-    ===================================================== */
+/* =====================================================
+   CONFIGURATION API
+===================================================== */
 
-    if (currentYear) {
-        currentYear.textContent = new Date().getFullYear();
+const API_URL =
+    "https://script.google.com/macros/s/AKfycbyrnIMD_QG3G1gxc62hGgJEoo3SBNvl9jwTXcHWtCUHj1iOiYpb_p6UldhN-kz6L9qF/exec";
+
+
+/* =====================================================
+   MESSAGE
+===================================================== */
+
+function afficherMessage(elementId, message, succes = true) {
+
+    const element = document.getElementById(elementId);
+
+    if (!element) {
+        console.error("Élément introuvable :", elementId);
+        return;
     }
 
+    element.style.display = "block";
+    element.textContent = message;
+    element.style.padding = "12px";
+    element.style.marginTop = "15px";
+    element.style.borderRadius = "8px";
 
-    /* =====================================================
-       MENU MOBILE
-    ===================================================== */
+    if (succes) {
 
-    if (menuToggle && navbar) {
+        element.style.background = "#dcfce7";
+        element.style.color = "#166534";
 
-        menuToggle.addEventListener("click", () => {
+    } else {
 
-            const isOpen = navbar.classList.toggle("open");
+        element.style.background = "#fee2e2";
+        element.style.color = "#991b1b";
+    }
+}
 
-            menuToggle.setAttribute(
-                "aria-expanded",
-                isOpen ? "true" : "false"
+
+/* =====================================================
+   API GET
+===================================================== */
+
+async function apiGet(action) {
+
+    console.log("GET API :", action);
+
+    try {
+
+        const url =
+            API_URL +
+            "?action=" +
+            encodeURIComponent(action);
+
+        const response = await fetch(url);
+
+        console.log("Réponse HTTP GET :", response.status);
+
+        const texte = await response.text();
+
+        console.log("Réponse GET :", texte);
+
+        let resultat;
+
+        try {
+
+            resultat = JSON.parse(texte);
+
+        } catch (error) {
+
+            throw new Error(
+                "La réponse de Google Apps Script n'est pas un JSON valide."
+            );
+        }
+
+        return resultat;
+
+    } catch (error) {
+
+        console.error("ERREUR API GET :", error);
+
+        return {
+            success: false,
+            message: error.message
+        };
+    }
+}
+
+
+/* =====================================================
+   API POST
+===================================================== */
+
+async function apiPost(data) {
+
+    console.log("====================================");
+    console.log("POST API");
+    console.log("Données envoyées :", data);
+    console.log("====================================");
+
+    try {
+
+        const response = await fetch(API_URL, {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "text/plain;charset=utf-8"
+            },
+
+            body: JSON.stringify(data)
+
+        });
+
+
+        console.log(
+            "Réponse HTTP POST :",
+            response.status
+        );
+
+
+        const texte = await response.text();
+
+
+        console.log(
+            "Réponse Google Apps Script :",
+            texte
+        );
+
+
+        if (!texte) {
+
+            throw new Error(
+                "Google Apps Script a retourné une réponse vide."
+            );
+        }
+
+
+        let resultat;
+
+        try {
+
+            resultat = JSON.parse(texte);
+
+        } catch (error) {
+
+            console.error(
+                "Réponse reçue non JSON :",
+                texte
             );
 
-        });
-
-
-        const navLinks = document.querySelectorAll(".nav-link");
-
-        navLinks.forEach(link => {
-
-            link.addEventListener("click", () => {
-
-                navbar.classList.remove("open");
-
-                menuToggle.setAttribute(
-                    "aria-expanded",
-                    "false"
-                );
-
-            });
-
-        });
-
-    }
-
-
-    /* =====================================================
-       HEADER AU SCROLL
-    ===================================================== */
-
-    function updateHeader() {
-
-        if (window.scrollY > 30) {
-
-            header.classList.add("scrolled");
-
-        } else {
-
-            header.classList.remove("scrolled");
-
-        }
-
-    }
-
-
-    window.addEventListener("scroll", updateHeader);
-
-    updateHeader();
-
-
-    /* =====================================================
-       LIENS NAVIGATION ACTIVE
-    ===================================================== */
-
-    const sections = document.querySelectorAll("main section[id]");
-    const navigationLinks = document.querySelectorAll(".nav-link");
-
-
-    function updateActiveNavigation() {
-
-        let currentSection = "";
-
-        sections.forEach(section => {
-
-            const sectionTop = section.offsetTop - 150;
-
-            if (window.scrollY >= sectionTop) {
-
-                currentSection = section.getAttribute("id");
-
-            }
-
-        });
-
-
-        navigationLinks.forEach(link => {
-
-            link.classList.remove("active");
-
-            const href = link.getAttribute("href");
-
-            if (href === `#${currentSection}`) {
-
-                link.classList.add("active");
-
-            }
-
-        });
-
-    }
-
-
-    window.addEventListener(
-        "scroll",
-        updateActiveNavigation
-    );
-
-
-    /* =====================================================
-       ANIMATION DES COMPTEURS
-    ===================================================== */
-
-    const counters = document.querySelectorAll(
-        "[data-counter]"
-    );
-
-
-    let countersStarted = false;
-
-
-    function startCounters() {
-
-        if (countersStarted) {
-            return;
+            throw new Error(
+                "Réponse Google Apps Script invalide."
+            );
         }
 
 
-        const statsSection =
-            document.querySelector(".stats-section");
+        return resultat;
 
 
-        if (!statsSection) {
-            return;
-        }
+    } catch (error) {
 
-
-        const rect =
-            statsSection.getBoundingClientRect();
-
-
-        if (rect.top < window.innerHeight * 0.85) {
-
-            countersStarted = true;
-
-
-            /*
-             * Les valeurs sont volontairement provisoires.
-             * Elles seront remplacées par les données réelles
-             * lorsque le portail sera connecté à la base de données.
-             */
-
-            const values = [
-                0,
-                0,
-                0,
-                0
-            ];
-
-
-            counters.forEach((counter, index) => {
-
-                const target = values[index];
-
-                animateCounter(counter, target);
-
-            });
-
-        }
-
-    }
-
-
-    function animateCounter(element, target) {
-
-        let current = 0;
-
-        const duration = 1200;
-
-        const startTime = performance.now();
-
-
-        function update(currentTime) {
-
-            const elapsed =
-                currentTime - startTime;
-
-
-            const progress =
-                Math.min(elapsed / duration, 1);
-
-
-            current =
-                Math.floor(progress * target);
-
-
-            element.textContent =
-                current.toLocaleString("fr-FR");
-
-
-            if (progress < 1) {
-
-                requestAnimationFrame(update);
-
-            } else {
-
-                element.textContent =
-                    target.toLocaleString("fr-FR");
-
-            }
-
-        }
-
-
-        requestAnimationFrame(update);
-
-    }
-
-
-    window.addEventListener(
-        "scroll",
-        startCounters
-    );
-
-
-    startCounters();
-
-
-    /* =====================================================
-       MODAL SIGNALEMENT
-    ===================================================== */
-
-    function openModal() {
-
-        if (!reportModal) {
-            return;
-        }
-
-        reportModal.classList.add("active");
-
-        document.body.style.overflow = "hidden";
-
-    }
-
-
-    function closeModal() {
-
-        if (!reportModal) {
-            return;
-        }
-
-        reportModal.classList.remove("active");
-
-        document.body.style.overflow = "";
-
-    }
-
-
-    if (openReportModal) {
-
-        openReportModal.addEventListener(
-            "click",
-            openModal
+        console.error(
+            "ERREUR API POST :",
+            error
         );
 
+
+        return {
+
+            success: false,
+
+            message:
+                "Impossible d'envoyer les données. " +
+                error.message
+
+        };
     }
+}
 
 
-    if (closeReportModal) {
+/* =====================================================
+   INSCRIPTION JEUNE
+===================================================== */
 
-        closeReportModal.addEventListener(
-            "click",
-            closeModal
-        );
+async function inscrireJeune(data) {
 
-    }
+    return await apiPost({
 
+        action: "inscription",
 
-    if (modalOverlay) {
+        nom: data.nom || "",
 
-        modalOverlay.addEventListener(
-            "click",
-            closeModal
-        );
+        prenom: data.prenom || "",
 
-    }
+        telephone: data.telephone || "",
 
+        quartier: data.quartier || "",
 
-    /* =====================================================
-       ESC POUR FERMER LE MODAL
-    ===================================================== */
+        email: data.email || "",
 
-    document.addEventListener(
-        "keydown",
-        event => {
+        domaine: data.domaine || "",
 
-            if (
-                event.key === "Escape" &&
-                reportModal &&
-                reportModal.classList.contains("active")
-            ) {
+        volontaire: data.volontaire || "Non"
 
-                closeModal();
-
-            }
-
-        }
-    );
+    });
+}
 
 
-    /* =====================================================
-       FORMULAIRE DE SIGNALEMENT
-    ===================================================== */
+/* =====================================================
+   PROPOSER UNE IDÉE
+===================================================== */
 
-    if (reportForm) {
+async function envoyerIdee(data) {
 
-        reportForm.addEventListener(
+    return await apiPost({
+
+        action: "idee",
+
+        nom: data.nom || "",
+
+        telephone: data.telephone || "",
+
+        quartier: data.quartier || "",
+
+        categorie: data.categorie || "",
+
+        idee: data.idee || ""
+
+    });
+}
+
+
+/* =====================================================
+   SIGNALEMENT
+===================================================== */
+
+async function envoyerSignalement(data) {
+
+    return await apiPost({
+
+        action: "signalement",
+
+        type: data.type || "",
+
+        quartier: data.quartier || "",
+
+        lieu: data.lieu || "",
+
+        description: data.description || "",
+
+        photo: data.photo || "",
+
+        nom: data.nom || "",
+
+        telephone: data.telephone || ""
+
+    });
+}
+
+
+/* =====================================================
+   ACTIVITÉ
+===================================================== */
+
+async function envoyerActivite(data) {
+
+    return await apiPost({
+
+        action: "activite",
+
+        date: data.date || "",
+
+        activite: data.activite || "",
+
+        categorie: data.categorie || "",
+
+        lieu: data.lieu || "",
+
+        description: data.description || "",
+
+        participants: data.participants || 0,
+
+        responsable: data.responsable || "",
+
+        statut: data.statut || "Prévue",
+
+        photo: data.photo || ""
+
+    });
+}
+
+
+/* =====================================================
+   PARTICIPATION
+===================================================== */
+
+async function envoyerParticipation(data) {
+
+    return await apiPost({
+
+        action: "participation",
+
+        jeune_id: data.jeune_id || "",
+
+        activite_id: data.activite_id || "",
+
+        nom: data.nom || "",
+
+        telephone: data.telephone || "",
+
+        present: data.present || "Oui",
+
+        observation: data.observation || ""
+
+    });
+}
+
+
+/* =====================================================
+   FORMULAIRE INSCRIPTION
+===================================================== */
+
+document.addEventListener("DOMContentLoaded", function () {
+
+
+    console.log("====================================");
+    console.log("CCJ MBAO – PORTAIL NUMÉRIQUE");
+    console.log("JavaScript chargé correctement");
+    console.log("====================================");
+
+
+    /* =================================================
+       INSCRIPTION
+    ================================================= */
+
+    const inscriptionForm =
+        document.getElementById("inscriptionForm");
+
+
+    if (inscriptionForm) {
+
+        console.log("✅ Formulaire inscription détecté");
+
+
+        inscriptionForm.addEventListener(
             "submit",
-            event => {
+            async function (event) {
 
                 event.preventDefault();
 
 
-                /*
-                 * Pour cette V1, les données ne sont pas
-                 * encore envoyées vers une base de données.
-                 *
-                 * Cette étape sera remplacée plus tard par :
-                 *
-                 * POST /api/signalements
-                 *
-                 * avec Laravel + PostgreSQL.
-                 */
+                afficherMessage(
+                    "inscriptionMessage",
+                    "⏳ Enregistrement en cours...",
+                    true
+                );
 
 
-                const type =
-                    document.getElementById(
-                        "reportType"
-                    ).value;
+                const data = {
+
+                    nom:
+                        document
+                            .getElementById("inscriptionNom")
+                            .value
+                            .trim(),
+
+                    prenom:
+                        document
+                            .getElementById("inscriptionPrenom")
+                            .value
+                            .trim(),
+
+                    telephone:
+                        document
+                            .getElementById("inscriptionTelephone")
+                            .value
+                            .trim(),
+
+                    quartier:
+                        document
+                            .getElementById("inscriptionQuartier")
+                            .value
+                            .trim(),
+
+                    email:
+                        document
+                            .getElementById("inscriptionEmail")
+                            .value
+                            .trim(),
+
+                    domaine:
+                        document
+                            .getElementById("inscriptionDomaine")
+                            .value,
+
+                    volontaire: "Non"
+                };
 
 
-                const neighborhood =
-                    document.getElementById(
-                        "reportNeighborhood"
-                    ).value.trim();
+                const resultat =
+                    await inscrireJeune(data);
 
 
-                const description =
-                    document.getElementById(
-                        "reportDescription"
-                    ).value.trim();
+                console.log(
+                    "Résultat inscription :",
+                    resultat
+                );
 
 
-                if (
-                    !type ||
-                    !neighborhood ||
-                    !description
-                ) {
+                if (resultat.success) {
 
-                    showToast(
-                        "Veuillez remplir les champs obligatoires.",
-                        false
+                    afficherMessage(
+                        "inscriptionMessage",
+                        "✅ Votre inscription a été enregistrée avec succès. Votre identifiant est : " +
+                        resultat.id,
+                        true
                     );
 
-                    return;
 
+                    inscriptionForm.reset();
+
+
+                } else {
+
+                    afficherMessage(
+                        "inscriptionMessage",
+                        "❌ " +
+                        (
+                            resultat.message ||
+                            "Une erreur est survenue."
+                        ),
+                        false
+                    );
                 }
 
+            }
+        );
 
-                /*
-                 * Simulation d'enregistrement local
-                 */
+    } else {
 
-                const report = {
+        console.warn(
+            "ℹ️ Aucun formulaire inscription sur cette page."
+        );
+    }
 
-                    id:
-                        "SIG-" +
-                        Date.now(),
 
-                    type: type,
 
-                    quartier: neighborhood,
+    /* =================================================
+       VOLONTAIRE
+    ================================================= */
 
-                    description: description,
+    const volontaireForm =
+        document.getElementById("volontaireForm");
 
-                    date:
-                        new Date().toISOString(),
 
-                    statut: "nouveau"
+    if (volontaireForm) {
+
+        console.log("✅ Formulaire volontaire détecté");
+
+
+        volontaireForm.addEventListener(
+            "submit",
+            async function (event) {
+
+                event.preventDefault();
+
+
+                afficherMessage(
+                    "volontaireMessage",
+                    "⏳ Enregistrement de votre candidature...",
+                    true
+                );
+
+
+                const data = {
+
+                    nom:
+                        document
+                            .getElementById("volontaireNom")
+                            .value
+                            .trim(),
+
+                    prenom:
+                        document
+                            .getElementById("volontairePrenom")
+                            .value
+                            .trim(),
+
+                    telephone:
+                        document
+                            .getElementById("volontaireTelephone")
+                            .value
+                            .trim(),
+
+                    quartier:
+                        document
+                            .getElementById("volontaireQuartier")
+                            .value
+                            .trim(),
+
+                    domaine:
+                        document
+                            .getElementById("volontaireDomaine")
+                            .value,
+
+                    volontaire: "Oui"
 
                 };
 
 
-                const existingReports =
-                    JSON.parse(
-                        localStorage.getItem(
-                            "mbao_signalements"
-                        )
-                    ) || [];
+                const resultat =
+                    await inscrireJeune(data);
 
 
-                existingReports.push(report);
-
-
-                localStorage.setItem(
-                    "mbao_signalements",
-                    JSON.stringify(existingReports)
+                console.log(
+                    "Résultat volontaire :",
+                    resultat
                 );
 
 
-                reportForm.reset();
+                if (resultat.success) {
 
-                closeModal();
+                    afficherMessage(
+                        "volontaireMessage",
+                        "✅ Votre demande pour devenir volontaire a été enregistrée. Votre identifiant est : " +
+                        resultat.id,
+                        true
+                    );
 
 
-                showToast(
-                    "Votre signalement a bien été enregistré.",
-                    true
-                );
+                    volontaireForm.reset();
+
+
+                } else {
+
+                    afficherMessage(
+                        "volontaireMessage",
+                        "❌ " +
+                        (
+                            resultat.message ||
+                            "Une erreur est survenue."
+                        ),
+                        false
+                    );
+                }
 
             }
         );
 
-    }
+    } else {
 
-
-    /* =====================================================
-       TOAST
-    ===================================================== */
-
-    function showToast(message, success = true) {
-
-        if (!toast) {
-            return;
-        }
-
-
-        const toastText =
-            toast.querySelector("p");
-
-
-        const toastIcon =
-            toast.querySelector(".toast-icon");
-
-
-        if (toastText) {
-
-            toastText.textContent =
-                message;
-
-        }
-
-
-        if (toastIcon) {
-
-            toastIcon.textContent =
-                success ? "✓" : "!";
-
-        }
-
-
-        toast.classList.add("show");
-
-
-        setTimeout(() => {
-
-            toast.classList.remove("show");
-
-        }, 3500);
-
-    }
-
-
-    /* =====================================================
-       LIENS PLACEHOLDER
-    ===================================================== */
-
-    const placeholderLinks =
-        document.querySelectorAll(
-            'a[href="#"]'
+        console.warn(
+            "ℹ️ Aucun formulaire volontaire sur cette page."
         );
+    }
 
 
-    placeholderLinks.forEach(link => {
 
-        link.addEventListener(
-            "click",
-            event => {
+    /* =================================================
+       IDÉE
+    ================================================= */
+
+    const ideeForm =
+        document.getElementById("ideeForm");
+
+
+    if (ideeForm) {
+
+        console.log("✅ Formulaire idée détecté");
+
+
+        ideeForm.addEventListener(
+            "submit",
+            async function (event) {
 
                 event.preventDefault();
 
-                showToast(
-                    "Cette rubrique sera bientôt disponible.",
+
+                afficherMessage(
+                    "ideeMessage",
+                    "⏳ Envoi de votre idée...",
                     true
                 );
 
+
+                const data = {
+
+                    nom:
+                        document
+                            .getElementById("ideeNom")
+                            .value
+                            .trim(),
+
+                    telephone:
+                        document
+                            .getElementById("ideeTelephone")
+                            .value
+                            .trim(),
+
+                    quartier:
+                        document
+                            .getElementById("ideeQuartier")
+                            .value
+                            .trim(),
+
+                    categorie:
+                        document
+                            .getElementById("ideeCategorie")
+                            .value,
+
+                    idee:
+                        document
+                            .getElementById("ideeTexte")
+                            .value
+                            .trim()
+
+                };
+
+
+                const resultat =
+                    await envoyerIdee(data);
+
+
+                console.log(
+                    "Résultat idée :",
+                    resultat
+                );
+
+
+                if (resultat.success) {
+
+                    afficherMessage(
+                        "ideeMessage",
+                        "✅ Merci ! Votre idée a bien été enregistrée. Référence : " +
+                        resultat.id,
+                        true
+                    );
+
+
+                    ideeForm.reset();
+
+
+                } else {
+
+                    afficherMessage(
+                        "ideeMessage",
+                        "❌ " +
+                        (
+                            resultat.message ||
+                            "Une erreur est survenue."
+                        ),
+                        false
+                    );
+                }
+
             }
         );
 
-    });
+    } else {
 
-
-    /* =====================================================
-       ANIMATION D'APPARITION
-    ===================================================== */
-
-    const animatedElements =
-        document.querySelectorAll(
-            ".feature-card, .opportunity-card, .climate-card, .event-card, .mini-card"
+        console.warn(
+            "ℹ️ Aucun formulaire idée sur cette page."
         );
+    }
 
-
-    const observer =
-        new IntersectionObserver(
-            entries => {
-
-                entries.forEach(entry => {
-
-                    if (entry.isIntersecting) {
-
-                        entry.target.classList.add(
-                            "visible"
-                        );
-
-                        observer.unobserve(
-                            entry.target
-                        );
-
-                    }
-
-                });
-
-            },
-            {
-                threshold: 0.12
-            }
-        );
-
-
-    animatedElements.forEach(element => {
-
-        element.style.opacity = "0";
-
-        element.style.transform =
-            "translateY(18px)";
-
-        element.style.transition =
-            "opacity 0.55s ease, transform 0.55s ease";
-
-        observer.observe(element);
-
-    });
-
-
-    /*
-     * Classe ajoutée dynamiquement pour l'animation.
-     */
-
-    const animationStyle =
-        document.createElement("style");
-
-
-    animationStyle.textContent = `
-
-        .feature-card.visible,
-        .opportunity-card.visible,
-        .climate-card.visible,
-        .event-card.visible,
-        .mini-card.visible {
-
-            opacity: 1 !important;
-
-            transform: translateY(0) !important;
-
-        }
-
-    `;
-
-
-    document.head.appendChild(
-        animationStyle
-    );
-
-
-    console.log(
-        "Portail numérique de la Jeunesse de Mbao - V1 chargé."
-    );
 
 });

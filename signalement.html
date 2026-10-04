@@ -199,171 +199,163 @@
 
         <div>
 
-            <form
-                class="modal-content"
-                id="environmentReportForm"
-                style="position:relative;width:100%;max-height:none;">
+            <form id="signalementForm">
 
-                <div class="modal-header">
+    <div class="form-group">
 
-                    <span class="modal-icon">
-                        🚨
-                    </span>
+        <label for="signalementType">
+            Type de problème *
+        </label>
 
-                    <h2>
-                        Nouveau signalement
-                    </h2>
+        <select
+            id="signalementType"
+            required
+        >
 
-                    <p>
-                        Les champs marqués d'un * sont obligatoires.
-                    </p>
+            <option value="">
+                Sélectionner
+            </option>
 
-                </div>
+            <option value="Dépôt sauvage de déchets">
+                Dépôt sauvage de déchets
+            </option>
 
+            <option value="Déchets plastiques">
+                Déchets plastiques
+            </option>
 
-                <div class="form-group">
+            <option value="Pollution">
+                Pollution
+            </option>
 
-                    <label for="environmentType">
-                        Type de problème *
-                    </label>
+            <option value="Eaux usées">
+                Eaux usées
+            </option>
 
-                    <select
-                        id="environmentType"
-                        required>
+            <option value="Dégradation environnementale">
+                Dégradation environnementale
+            </option>
 
-                        <option value="">
-                            Sélectionner
-                        </option>
+            <option value="Autre">
+                Autre
+            </option>
 
-                        <option value="depot_dechets">
-                            Dépôt sauvage de déchets
-                        </option>
+        </select>
 
-                        <option value="plastique">
-                            Déchets plastiques
-                        </option>
-
-                        <option value="espace_vert">
-                            Dégradation d'un espace vert
-                        </option>
-
-                        <option value="pollution">
-                            Pollution
-                        </option>
-
-                        <option value="eau">
-                            Problème lié à l'eau
-                        </option>
-
-                        <option value="incendie">
-                            Incendie / brûlage de déchets
-                        </option>
-
-                        <option value="autre">
-                            Autre
-                        </option>
-
-                    </select>
-
-                </div>
+    </div>
 
 
-                <div class="form-group">
+    <div class="form-group">
 
-                    <label for="environmentNeighborhood">
-                        Quartier *
-                    </label>
+        <label for="signalementQuartier">
+            Quartier *
+        </label>
 
-                    <input
-                        type="text"
-                        id="environmentNeighborhood"
-                        placeholder="Ex : Mbao Village"
-                        required>
+        <input
+            type="text"
+            id="signalementQuartier"
+            required
+            placeholder="Ex : Mbao Village"
+        >
 
-                </div>
-
-
-                <div class="form-group">
-
-                    <label for="environmentLocation">
-                        Lieu précis
-                    </label>
-
-                    <input
-                        type="text"
-                        id="environmentLocation"
-                        placeholder="Ex : près de l'école, rue..."
-                    >
-
-                </div>
+    </div>
 
 
-                <div class="form-group">
+    <div class="form-group">
 
-                    <label for="environmentDescription">
-                        Description du problème *
-                    </label>
+        <label for="signalementLieu">
+            Lieu précis
+        </label>
 
-                    <textarea
-                        id="environmentDescription"
-                        rows="5"
-                        placeholder="Décrivez ce que vous avez constaté..."
-                        required></textarea>
+        <input
+            type="text"
+            id="signalementLieu"
+            placeholder="Rue, école, marché..."
+        >
 
-                </div>
-
-
-                <div class="form-group">
-
-                    <label for="environmentPhoto">
-                        Ajouter une photo
-                    </label>
-
-                    <input
-                        type="file"
-                        id="environmentPhoto"
-                        accept="image/*">
-
-                </div>
+    </div>
 
 
-                <div class="form-group">
+    <div class="form-group">
 
-                    <label for="reporterName">
-                        Votre nom
-                    </label>
+        <label for="signalementDescription">
+            Description *
+        </label>
 
-                    <input
-                        type="text"
-                        id="reporterName"
-                        placeholder="Facultatif">
+        <textarea
+            id="signalementDescription"
+            rows="5"
+            required
+            placeholder="Décrivez le problème constaté..."
+        ></textarea>
 
-                </div>
-
-
-                <div class="form-group">
-
-                    <label for="reporterPhone">
-                        Téléphone
-                    </label>
-
-                    <input
-                        type="tel"
-                        id="reporterPhone"
-                        placeholder="Facultatif">
-
-                </div>
+    </div>
 
 
-                <button
-                    type="submit"
-                    class="btn btn-primary modal-submit">
+    <div class="form-group">
 
-                    🚨 Envoyer le signalement
+        <label for="signalementNom">
+            Votre nom
+        </label>
 
-                </button>
+        <input
+            type="text"
+            id="signalementNom"
+            placeholder="Nom et prénom"
+        >
 
-            </form>
+    </div>
+
+
+    <div class="form-group">
+
+        <label for="signalementTelephone">
+            Téléphone
+        </label>
+
+        <input
+            type="tel"
+            id="signalementTelephone"
+            placeholder="77 000 00 00"
+        >
+
+    </div>
+
+
+    <div class="form-group">
+
+        <label for="signalementPhoto">
+            Photo
+        </label>
+
+        <input
+            type="file"
+            id="signalementPhoto"
+            accept="image/*"
+        >
+
+        <small>
+            La photo sera connectée à Google Drive dans l'étape suivante.
+        </small>
+
+    </div>
+
+
+    <button
+        type="submit"
+        class="btn"
+    >
+        Envoyer le signalement
+    </button>
+
+
+    <div
+        id="signalementMessage"
+        class="form-message"
+        style="display:none;"
+    ></div>
+
+</form>
 
         </div>
 
