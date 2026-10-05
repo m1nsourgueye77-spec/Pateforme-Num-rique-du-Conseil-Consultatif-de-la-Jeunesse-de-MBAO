@@ -169,6 +169,11 @@ function initialiserMenuMobile() {
             ouvert ? "true" : "false"
         );
 
+        menuToggle.setAttribute(
+    "aria-label",
+    ouvert ? "Fermer le menu" : "Ouvrir le menu"
+);
+
         document.body.classList.toggle("menu-open", ouvert);
     }
 

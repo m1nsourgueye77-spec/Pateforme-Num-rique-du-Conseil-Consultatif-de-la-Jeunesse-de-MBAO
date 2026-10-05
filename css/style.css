@@ -150,6 +150,15 @@ header {
     flex-direction: column;
     gap: 5px;
     flex-shrink: 0;
+    position: relative;
+z-index: 1001;
+touch-action: manipulation;
+
+/* Sécurité tactile mobile */
+    position: relative;
+    z-index: 1001;
+    touch-action: manipulation;
+
     -webkit-tap-highlight-color: transparent;
 }
 
@@ -434,6 +443,7 @@ footer li {
 
     .nav-menu {
         gap: 0;
+         z-index: 1000;
     }
 
     .nav-menu a {
@@ -510,6 +520,8 @@ footer li {
         border-top: 1px solid #e5e7eb;
         border-bottom: 1px solid #e5e7eb;
         box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+
+        z-index: 1000;
     }
 
     .nav-menu.open {
