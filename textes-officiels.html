@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Textes officiels | CCJ Mbao</title>
+
+    <meta name="description"
+          content="Consultez les textes officiels relatifs au Conseil consultatif des Jeunes du Sénégal (CCJS).">
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <style>
+        .official-documents {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 50px 20px;
+        }
+
+        .documents-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .documents-header h1 {
+            font-size: clamp(1.8rem, 4vw, 2.7rem);
+            margin-bottom: 15px;
+        }
+
+        .documents-header p {
+            max-width: 750px;
+            margin: 0 auto;
+            line-height: 1.8;
+        }
+
+        .documents-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 25px;
+        }
+
+        .document-card {
+            display: flex;
+            flex-direction: column;
+            padding: 28px;
+            border: 1px solid #e0e6e8;
+            border-radius: 14px;
+            background: #fff;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .document-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        .document-category {
+            display: inline-block;
+            align-self: flex-start;
+            padding: 6px 12px;
+            margin-bottom: 15px;
+            border-radius: 20px;
+            background: #e6f4ed;
+            color: #126b43;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .document-card h2 {
+            font-size: 1.2rem;
+            line-height: 1.5;
+            margin: 0 0 12px;
+        }
+
+        .document-card p {
+            line-height: 1.7;
+            margin-bottom: 18px;
+        }
+
+        .document-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: auto;
+            padding-top: 10px;
+        }
+
+        .document-button {
+            display: inline-block;
+            padding: 12px 16px;
+            border-radius: 7px;
+            background: #087f5b;
+            color: #fff;
+            text-decoration: none;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .document-button:hover {
+            background: #066747;
+        }
+
+        .document-button.secondary {
+            background: #f0b323;
+            color: #17221c;
+        }
+
+        .document-button.secondary:hover {
+            background: #e2a30d;
+        }
+
+        .documents-note {
+            margin-top: 35px;
+            padding: 18px;
+            border-left: 4px solid #e5ae24;
+            background: #fff9e8;
+            line-height: 1.7;
+        }
+
+        @media (max-width: 700px) {
+            .documents-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .document-card {
+                padding: 22px;
+            }
+
+            .document-actions {
+                flex-direction: column;
+            }
+
+            .document-button {
+                width: auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Conservez ici le header et le menu existants de votre portail. -->
+
+    <main class="official-documents">
+
+        <header class="documents-header">
+            <h1>Textes officiels et documents de référence</h1>
+
+            <p>
+                Retrouvez les textes réglementaires relatifs à la création,
+                à l'organisation et au fonctionnement du Conseil consultatif
+                des Jeunes du Sénégal (CCJS), ainsi qu'aux modalités
+                de son processus électoral.
+            </p>
+        </header>
+
+        <section class="documents-grid" aria-label="Liste des textes officiels">
+
+            <!-- DOCUMENT 1 -->
+
+            <article class="document-card">
+
+                <div class="document-icon" aria-hidden="true">📜</div>
+
+                <span class="document-category">
+                    Arrêté ministériel
+                </span>
+
+                <h2>
+                    Arrêté n° 006619 portant modalités du processus
+                    électoral des instances du Conseil consultatif
+                    des Jeunes du Sénégal
+                </h2>
+
+                <p>
+                    Ce texte définit les modalités du processus électoral,
+                    les conditions de participation, l'organisation des
+                    collèges électoraux et les missions des comités chargés
+                    de l'organisation des élections.
+                </p>
+
+                <div class="document-actions">
+
+                    <a
+                        class="document-button"
+                        href="documents/arrete-006619-processus-electoral-ccjs.pdf"
+                        target="_blank"
+                        rel="noopener noreferrer">
+                        👁 Consulter le PDF
+                    </a>
+
+                    <a
+                        class="document-button secondary"
+                        href="documents/arrete-006619-processus-electoral-ccjs.pdf"
+                        download>
+                        ⬇ Télécharger
+                    </a>
+
+                </div>
+
+            </article>
+
+            <!-- DOCUMENT 2 -->
+
+            <article class="document-card">
+
+                <div class="document-icon" aria-hidden="true">⚖️</div>
+
+                <span class="document-category">
+                    Décret
+                </span>
+
+                <h2>
+                    Décret n° 2025-1962 du 5 décembre 2025 portant
+                    création et fixant les règles d'organisation
+                    et de fonctionnement du CCJS
+                </h2>
+
+                <p>
+                    Ce décret porte création du Conseil consultatif
+                    des Jeunes du Sénégal et précise notamment ses
+                    missions, sa composition, ses organes, les modalités
+                    de désignation de ses membres et son fonctionnement.
+                </p>
+
+                <div class="document-actions">
+
+                    <a
+                        class="document-button"
+                        href="documents/decret-ccjs.pdf"
+                        target="_blank"
+                        rel="noopener noreferrer">
+                        👁 Consulter le PDF
+                    </a>
+
+                    <a
+                        class="document-button secondary"
+                        href="documents/decret-ccjs.pdf"
+                        download>
+                        ⬇ Télécharger
+                    </a>
+
+                </div>
+
+            </article>
+
+        </section>
+
+        <aside class="documents-note">
+            <strong>Information :</strong>
+            les documents sont mis à disposition à titre de référence
+            institutionnelle. Pour toute interprétation juridique,
+            veuillez vous reporter aux textes officiels complets
+            et à leurs éventuelles modifications.
+        </aside>
+
+    </main>
+
+    <!-- Conservez ici le footer existant de votre portail. -->
+
+</body>
+</html>
