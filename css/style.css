@@ -61,12 +61,28 @@ header {
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
 }
 
-.header-inner {
+/* Structure commune de l'en-tête sur toutes les pages */
+
+.header-inner,
+.header-container {
     min-height: 76px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 20px;
+    position: relative;
+}
+
+/* En-tête commun */
+
+header,
+.header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: #ffffff;
+    border-bottom: 1px solid #e5e7eb;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
 }
 
 /* Logo */
@@ -101,22 +117,15 @@ header {
     color: #64748b;
 }
 
-/* =========================================================
-   NAVIGATION DESKTOP
-   ========================================================= */
+/* Compatibilité avec les anciennes structures de navigation */
 
-.nav-menu {
+.navbar {
     display: flex;
     align-items: center;
     gap: 4px;
-    list-style: none;
 }
 
-.nav-menu li {
-    list-style: none;
-}
-
-.nav-menu a {
+.navbar .nav-link {
     display: block;
     padding: 10px 12px;
     border-radius: 8px;
@@ -126,12 +135,44 @@ header {
     transition: background 0.2s ease, color 0.2s ease;
 }
 
-.nav-menu a:hover,
-.nav-menu a.active {
+.navbar .nav-link:hover,
+.navbar .nav-link.active {
     color: #006b5b;
     background: #ecfdf5;
 }
 
+/* Liens de navigation : structure moderne et ancienne */
+
+.nav-menu,
+.navbar {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-menu {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.nav-menu a {
+    display: block;
+    padding: 10px 12px;
+    border-radius: 8px;
+    color: #334155;
+    font-size: 0.92rem;
+    font-weight: 600;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.nav-menu a:hover,
+.nav-menu a.active,
+.navbar .nav-link:hover,
+.navbar .nav-link.active {
+    color: #006b5b;
+    background: #ecfdf5;
+}
 /* =========================================================
    BOUTON HAMBURGER
    ========================================================= */
@@ -437,19 +478,21 @@ footer li {
 
 @media (max-width: 900px) {
 
-    .header-inner {
-        min-height: 70px;
-    }
+    .header-inner,
+.header-container {
+    min-height: 70px;
+}
 
-    .nav-menu {
-        gap: 0;
-         z-index: 1000;
-    }
+.navbar {
+    gap: 0;
+}
 
-    .nav-menu a {
-        padding: 9px 8px;
-        font-size: 0.84rem;
-    }
+.navbar .nav-link {
+    padding: 9px 8px;
+    font-size: 0.84rem;
+}
+
+
 
     .cards {
         grid-template-columns: repeat(2, 1fr);
@@ -479,10 +522,11 @@ footer li {
         top: 0;
     }
 
-    .header-inner {
-        min-height: 66px;
-        position: relative;
-    }
+    .header-inner,
+.header-container {
+    min-height: 66px;
+    position: relative;
+}
 
     .logo img {
         width: 46px;
@@ -548,6 +592,38 @@ footer li {
     section {
         padding: 45px 0;
     }
+
+
+    /* Ancienne navigation : adaptation mobile */
+
+.navbar {
+    display: none;
+    position: absolute;
+    top: calc(100% + 1px);
+    left: 0;
+    right: 0;
+    width: 100%;
+    padding: 10px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 3px;
+    background: #ffffff;
+    border-top: 1px solid #e5e7eb;
+    border-bottom: 1px solid #e5e7eb;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+    z-index: 1000;
+}
+
+.navbar.open {
+    display: flex;
+}
+
+.navbar .nav-link {
+    display: block;
+    width: 100%;
+    padding: 13px 15px;
+    font-size: 1rem;
+}
 
     .hero {
         padding: 55px 0;

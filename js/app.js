@@ -143,114 +143,82 @@ async function apiPost(action, data = {}) {
 }
 
 /* =========================================================
-   MENU MOBILE
+   MENU DE NAVIGATION RESPONSIVE
+   Compatible avec .nav-menu et .navbar
    ========================================================= */
 
 function initialiserMenuMobile() {
-
     const menuToggle = document.querySelector(".menu-toggle");
-    const navMenu = document.querySelector(".nav-menu");
+    const navMenu = document.querySelector(".nav-menu, .navbar");
 
-    if (!menuToggle || !navMenu) {
-        console.log("ℹ️ Menu mobile non détecté sur cette page.");
+    if (!navMenu) {
+        console.log("ℹ️ Menu de navigation non détecté.");
         return;
     }
 
-    console.log("✅ Menu mobile détecté");
+    // Les anciennes pages sans bouton hamburger conservent
+    // leur navigation normale sur ordinateur.
+    if (!menuToggle) {
+        console.log("ℹ️ Bouton hamburger absent sur cette page.");
+        return;
+    }
+
+    console.log("✅ Menu responsive détecté");
+
+    function fermerMenu() {
+        navMenu.classList.remove("open");
+        menuToggle.classList.remove("active");
+
+        menuToggle.setAttribute("aria-expanded", "false");
+        menuToggle.setAttribute("aria-label", "Ouvrir le menu");
+
+        document.body.classList.remove("menu-open");
+    }
 
     function ouvrirFermerMenu() {
+        const estOuvert = navMenu.classList.toggle("open");
 
-        const ouvert = navMenu.classList.toggle("open");
-
-        menuToggle.classList.toggle("active", ouvert);
+        menuToggle.classList.toggle("active", estOuvert);
 
         menuToggle.setAttribute(
             "aria-expanded",
-            ouvert ? "true" : "false"
+            estOuvert ? "true" : "false"
         );
 
         menuToggle.setAttribute(
-    "aria-label",
-    ouvert ? "Fermer le menu" : "Ouvrir le menu"
-);
+            "aria-label",
+            estOuvert ? "Fermer le menu" : "Ouvrir le menu"
+        );
 
-        document.body.classList.toggle("menu-open", ouvert);
+        document.body.classList.toggle("menu-open", estOuvert);
     }
 
     menuToggle.addEventListener("click", function (event) {
-
         event.stopPropagation();
-
         ouvrirFermerMenu();
     });
 
-    /* Fermer après clic sur un lien */
-
-    const liens = navMenu.querySelectorAll("a");
-
-    liens.forEach(function (lien) {
-
-        lien.addEventListener("click", function () {
-
-            navMenu.classList.remove("open");
-            menuToggle.classList.remove("active");
-
-            menuToggle.setAttribute(
-                "aria-expanded",
-                "false"
-            );
-
-            document.body.classList.remove("menu-open");
-        });
-
+    // Fermer le menu après avoir sélectionné une page.
+    navMenu.querySelectorAll("a").forEach(function (lien) {
+        lien.addEventListener("click", fermerMenu);
     });
 
-    /* Fermer si on clique en dehors du menu */
-
+    // Fermer le menu en cliquant en dehors.
     document.addEventListener("click", function (event) {
-
-        const clicDansMenu =
-            navMenu.contains(event.target);
-
-        const clicSurBouton =
-            menuToggle.contains(event.target);
-
         if (
             navMenu.classList.contains("open") &&
-            !clicDansMenu &&
-            !clicSurBouton
+            !navMenu.contains(event.target) &&
+            !menuToggle.contains(event.target)
         ) {
-
-            navMenu.classList.remove("open");
-            menuToggle.classList.remove("active");
-
-            menuToggle.setAttribute(
-                "aria-expanded",
-                "false"
-            );
-
-            document.body.classList.remove("menu-open");
+            fermerMenu();
         }
-
     });
 
-    /* Fermer le menu si l'écran repasse en desktop */
-
+    // Fermer le menu lorsque l'écran repasse en desktop.
     window.addEventListener("resize", function () {
-
         if (window.innerWidth > 700) {
-
-            navMenu.classList.remove("open");
-            menuToggle.classList.remove("active");
-
-            menuToggle.setAttribute(
-                "aria-expanded",
-                "false"
-            );
-
-            document.body.classList.remove("menu-open");
+            fermerMenu();
         }
-
     });
 }
 
